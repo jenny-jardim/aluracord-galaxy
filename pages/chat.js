@@ -100,7 +100,7 @@ export default function ChatPage() {
                             backgroundColor: appConfig.theme.colors.neutrals[600],
                             flexDirection: 'column',
                             borderRadius: '5px',
-                            padding: '16px',
+                            padding: '10px',
                         }}
                     >
                         <MessageList mensagens={listaDeMensagens} />
@@ -116,8 +116,10 @@ export default function ChatPage() {
                             styleSheet={{
                                 display: 'flex',
                                 alignItems: 'center',
+                                paddingTop: '1px',
                             }}
                         >
+            
                             <TextField
                                 value={mensagem}
                                 onChange={(event) => {
@@ -130,7 +132,7 @@ export default function ChatPage() {
                                         handleNovaMensagem(mensagem);
                                     }
                                 }}
-                                placeholder="Insira sua mensagem aqui..."
+                                placeholder="Type anything..."
                                 type="textarea"
                                 styleSheet={{
                                     width: '100%',
@@ -138,9 +140,36 @@ export default function ChatPage() {
                                     resize: 'none',
                                     borderRadius: '5px',
                                     padding: '6px 8px',
-                                    backgroundColor: appConfig.theme.colors.neutrals[800],
+                                    backgroundColor: appConfig.theme.colors.neutrals[700],
                                     marginRight: '12px',
                                     color: appConfig.theme.colors.neutrals[200],
+                                    focus: {
+                                        border:'1px solid',
+                                        borderColor: appConfig.theme.colors.primary[900],
+                                    }
+                                }}
+                            />
+                            <Button
+                                onClick={() => {
+                                    handleNovaMensagem(mensagem);
+                                }}
+                                styleSheet={{
+                                    width: '60px',
+                                    height: '43px',
+                                    position: 'relative',
+                                    top: '0',
+                                    transform: 'translate(0,-5px)',
+                                    margin: '0 1px',
+                        
+                                }}
+                                type='button'
+                                label='Send'
+                                buttonColors={{
+                                    contrastColor: appConfig.theme.colors.primary[700],
+                                    mainColor: appConfig.theme.colors.neutrals[700],
+                                    mainColorLight: appConfig.theme.colors.neutrals[700],
+                                    mainColorStrong: appConfig.theme.colors.neutrals[300],
+
                                 }}
                             />
                         </Box>
@@ -219,7 +248,7 @@ function MessageList(props) {
                                 styleSheet={{
                                     fontSize: '10px',
                                     marginLeft: '8px',
-                                    color: appConfig.theme.colors.neutrals[300],
+                                    color: appConfig.theme.colors.neutrals[200],
                                 }}
                                 tag="span"
                             >

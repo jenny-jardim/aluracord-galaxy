@@ -31,7 +31,7 @@ function GlobalStyle() {
   `}</style>
   );
 }
-function Titulo(props) {
+function Title(props) {
   const Tag = props.tag || 'h1';
   return (
     <>
@@ -103,7 +103,7 @@ export default function PaginaInicial() {
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
             }}
           >
-            <Titulo tag="h2">Boas vindas de volta!</Titulo>
+            <Title tag="h2">Welcome back!</Title>
             <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300] }}>
               {appConfig.name}
             </Text>
@@ -127,7 +127,7 @@ export default function PaginaInicial() {
             />
             <Button
               type='submit'
-              label='Entrar'
+              label='Enter'
               fullWidth
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
