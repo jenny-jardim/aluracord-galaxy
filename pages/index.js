@@ -69,7 +69,7 @@ export default function PaginaInicial() {
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backgroundColor: appConfig.theme.colors.primary[500],
-          backgroundImage: 'url(https://scx1.b-cdn.net/csz/news/800a/2019/galaxy.jpg)',
+          backgroundImage: 'url(https://nypost.com/wp-content/uploads/sites/2/2018/12/95-percent-earths-atmosphere.jpg?quality=90&strip=all&w=1488)',
           backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
         }}
       >
