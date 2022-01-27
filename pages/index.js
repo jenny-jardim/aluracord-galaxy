@@ -1,9 +1,11 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
+import React from 'react';
+import { useRouter } from 'next/router';
 import appConfig from '../config.json';
 
 function GlobalStyle() {
   return (
-    <style global jsx>{`
+       <style global jsx>{`
       * {
         margin: 0;
         padding: 0;
@@ -13,7 +15,7 @@ function GlobalStyle() {
       body {
         font-family: 'Open Sans', sans-serif;
       }
-      /* App fit Height */ 
+     
       html, body, #__next {
         min-height: 100vh;
         display: flex;
@@ -25,11 +27,10 @@ function GlobalStyle() {
       #__next > * {
         flex: 1;
       }
-      /* ./App fit Height */ 
-    `}</style>
+     
+  `}</style>
   );
 }
-
 function Titulo(props) {
   const Tag = props.tag || 'h1';
   return (
@@ -60,7 +61,9 @@ function Titulo(props) {
 // export default HomePage
 
 export default function PaginaInicial() {
-  const username = 'jenny-jardim';
+  // const username = 'jenny-jardim';
+  const [username, setUsername] = React.useState('jenny-jardim')
+  const roteamento = useRouter();
 
   return (
     <>
@@ -91,6 +94,10 @@ export default function PaginaInicial() {
           {/* Formulário */}
           <Box
             as="form"
+            onSubmit={function (infosDoEvento) {
+              infosDoEvento.preventDefault();
+              roteamento.push('/chat');
+            }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -102,6 +109,12 @@ export default function PaginaInicial() {
             </Text>
 
             <TextField
+              value={username}
+              onChange={function (event) {
+                console.log('usuário digitou', event.target.value);
+                const valor = event.target.value;
+                setUsername(valor);
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
