@@ -62,9 +62,11 @@ function Title(props) {
 
 export default function PaginaInicial() {
   // const username = 'jenny-jardim';
-  const [username, setUsername] = React.useState('jenny-jardim')
   const roteamento = useRouter();
+  const [username, setUsername] = React.useState('');
 
+  ;
+  
   return (
     <>
       <GlobalStyle />
@@ -96,7 +98,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (infosDoEvento) {
               infosDoEvento.preventDefault();
-              roteamento.push('/chat');
+              roteamento.push(`/chat?username=${username}`);
             }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',

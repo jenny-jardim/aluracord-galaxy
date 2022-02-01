@@ -1,7 +1,22 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/router';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM4MzU0OSwiZXhwIjoxOTU4OTU5NTQ5fQ.Zrl4l7f28-B6co-P7Jo2AONf1CTtYE1L2ct-Zx6zJqY';
+const SUPABASE_URL = 'https://dtdunocmufdikgwocltq.supabase.co';
+const supabase = createClient(SUPABASE_URL,SUPABASE_ANON_KEY); 
+
+function escutaMensagensRealTime(adicionaMensagem) {
+    return supabase
+    .from('mensagens')
+    .on('INSERT', (respostaLive) => {
+         adicionaMensagem(respostaLive.new);
+    })
+    .subscribe();
+}
 
 function GlobalStyle() {
     return (
@@ -33,31 +48,54 @@ function GlobalStyle() {
   }
 
 export default function ChatPage() {
+    const roteamento = useRouter('');
+    const loggedUser = roteamento.query.username;
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
-
-    /*
-    // Usuário
-    - Usuário digita no campo textarea
-    - Aperta enter para enviar
-    - Tem que adicionar o texto na listagem
     
-    // Dev
-    - [X] Campo criado
-    - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter pra limpar a variavel)
-    - [X] Lista de mensagens 
-    */
+
+    React.useEffect(() => {
+        supabase
+         .from('mensagens')
+         .select('*')
+         .order('id', {ascending: false})
+         .then(({ data }) => {
+             setListaDeMensagens(data);
+         });
+
+    
+        const subscription = escutaMensagensRealTime((novaMensagem) => {
+            setListaDeMensagens((valorAtualDaLista) => {
+                return [
+                    novaMensagem,
+                    ...valorAtualDaLista,
+                ]
+            });
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        }
+    }, []);
+    
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-            id: listaDeMensagens.length + 1,
-            de: 'jenny-jardim',
+            //id: listaDeMensagens.length + 1,
+            de: loggedUser,
             texto: novaMensagem,
         };
 
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens,
-        ]);
+        supabase
+            .from('mensagens')
+            .insert([
+                mensagem
+            ])
+            .then( ({data}) => {
+                setListaDeMensagens([ data, ...listaDeMensagens ]);
+
+            });
+
+        
         setMensagem('');
     }
 
@@ -84,9 +122,9 @@ export default function ChatPage() {
                         boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                         borderRadius: '5px',
                         backgroundColor: appConfig.theme.colors.neutrals[700],
-                        height: '50%',
-                        maxWidth: '45%',
-                        maxHeight: '45vh',
+                        height: '70%',
+                        maxWidth: '80%',
+                        maxHeight: '80vh',
                         padding: '32px',
                     }}
                 >
@@ -154,13 +192,17 @@ export default function ChatPage() {
                                     handleNovaMensagem(mensagem);
                                 }}
                                 styleSheet={{
-                                    width: '60px',
-                                    height: '43px',
-                                    position: 'relative',
-                                    top: '0',
-                                    transform: 'translate(0,-5px)',
-                                    margin: '0 1px',
-                        
+                                    borderRadius: '10%',
+                                    padding: '0 3px 0 0',
+                                    minWidth: '60px',
+                                    minHeight: '45px',
+                                    fontSize: '30px',
+                                    marginBottom: '8px',
+                                    lineHeight: '0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center', 
+                                    
                                 }}
                                 type='button'
                                 label='Send'
@@ -171,6 +213,12 @@ export default function ChatPage() {
                                     mainColorStrong: appConfig.theme.colors.neutrals[300],
 
                                 }}
+                            />
+                            <ButtonSendSticker 
+                                onStickerClick={(sticker) => {
+                                   handleNovaMensagem(':sticker:' + sticker);
+                                }}
+                                
                             />
                         </Box>
                     </Box>
@@ -199,7 +247,7 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log(props);
+    //console.log(props);
     return (
         <Box
             tag="ul"
@@ -239,7 +287,7 @@ function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/jenny-jardim.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong">
                                 {mensagem.de}
@@ -255,7 +303,21 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        {mensagem.texto}
+
+                        {mensagem.texto.startsWith(":sticker:") ? (
+                                <Image src={mensagem.texto.replace(':sticker:', '')} 
+                                styleSheet={{
+                                    maxWidth: '200px',
+                                    maxHeight: '200px',
+                                    borderRadius: '15%',
+                                    display: 'inline-block',
+                                    margin: '0 40px 0',
+                                  }}
+                                />
+                            ) : (
+                                mensagem.texto
+                        )} 
+                       
                     </Text>
                 );
             })}
