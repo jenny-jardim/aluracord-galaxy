@@ -48,8 +48,8 @@ function GlobalStyle() {
 }
 
 export default function ChatPage() {
-    const roteamento = useRouter('');
-    const loggedUser = roteamento.query.username;
+    const router = useRouter('');
+    const loggedUser = router.query.username;
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
     

@@ -1,7 +1,11 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import React from 'react';
 import { useRouter } from 'next/router';
+import _ from "lodash"; //debounce
 import appConfig from '../config.json';
+import RequestGihubtAPI from '../src/api/github';
+
+
 
 function GlobalStyle() {
   return (
@@ -47,26 +51,20 @@ function Title(props) {
   );
 }
 
-// Componente React
-// function HomePage() {
-//     // JSX
-//     return (
-//         <div>
-//             <GlobalStyle />
-//             <Titulo tag="h2">Boas vindas de volta!</Titulo>
-//             <h2>Discord - Alura Matrix</h2>
-//         </div>
-//     )
-// }
-// export default HomePage
-
-export default function PaginaInicial() {
+export default function HomePage() {
   // const username = 'jenny-jardim';
-  const roteamento = useRouter();
+  const router = useRouter();
   const [username, setUsername] = React.useState('');
 
-  ;
+  const [data, setData] = React.useState({});
+  const onChange = (value) => {
+    RequestGihubtAPI(value).then((data) => {
+      setData({...data})
+    })
+  }
   
+  const debounceResults = _.debounce(onChange,500);
+  const debounceOnChange = React.useCallback(debounceResults,[]);
   return (
     <>
       <GlobalStyle />
@@ -98,7 +96,15 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (infosDoEvento) {
               infosDoEvento.preventDefault();
-              roteamento.push(`/chat?username=${username}`);
+
+              RequestGihubtAPI(username).then((data) => {
+                if (data.login !== undefined) {
+                  router.push(`/chat?username=${username}`)
+                } else {
+                  window.alert('Invalid User')
+                }
+              })
+              
             }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -113,9 +119,11 @@ export default function PaginaInicial() {
             <TextField
               value={username}
               onChange={function (event) {
-                console.log('usuário digitou', event.target.value);
-                const valor = event.target.value;
-                setUsername(valor);
+                //console.log('usuário digitou', event.target.value);
+                //const valor = event.target.value;
+                setUsername(event.target.value)
+                debounceOnChange(event.target.value)
+                //setUsername(valor);
               }}
               fullWidth
               textFieldColors={{
@@ -129,7 +137,7 @@ export default function PaginaInicial() {
             />
             <Button
               type='submit'
-              label='Enter'
+              label='Login'
               fullWidth
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
@@ -158,13 +166,26 @@ export default function PaginaInicial() {
               minHeight: '240px',
             }}
           >
+          {data.login !== undefined ?
             <Image
               styleSheet={{
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
               src={`https://github.com/${username}.png`}
+              alt='User avatar'
             />
+          :
+          <Image
+            styleSheet={{
+              borderRadius: '50%',
+              marginBottom: '16px',
+            }}
+            src={`images/defaultUser.png`}
+            alt="User not found"
+            />
+          }
+
             <Text
               variant="body4"
               styleSheet={{
@@ -174,11 +195,12 @@ export default function PaginaInicial() {
                 borderRadius: '1000px'
               }}
             >
-              {username}
+              {data.name || ""}
             </Text>
           </Box>
           {/* Photo Area */}
         </Box>
+      
       </Box>
     </>
   );
