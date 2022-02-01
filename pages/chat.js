@@ -1,8 +1,8 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
-import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
 import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM4MzU0OSwiZXhwIjoxOTU4OTU5NTQ5fQ.Zrl4l7f28-B6co-P7Jo2AONf1CTtYE1L2ct-Zx6zJqY';
@@ -11,11 +11,11 @@ const supabase = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 function escutaMensagensRealTime(adicionaMensagem) {
     return supabase
-    .from('mensagens')
-    .on('INSERT', (respostaLive) => {
-         adicionaMensagem(respostaLive.new);
-    })
-    .subscribe();
+        .from('mensagens')
+        .on('INSERT', (respostaLive) => {
+            adicionaMensagem(respostaLive.new);
+        })
+        .subscribe();
 }
 
 function GlobalStyle() {
@@ -45,7 +45,7 @@ function GlobalStyle() {
         /* ./App fit Height */ 
     `}</style>
     );
-  }
+}
 
 export default function ChatPage() {
     const roteamento = useRouter('');
@@ -91,8 +91,8 @@ export default function ChatPage() {
                 mensagem
             ])
             .then( ({data}) => {
-                setListaDeMensagens([ data, ...listaDeMensagens ]);
-
+                //setListaDeMensagens([ data, ...listaDeMensagens ]);
+                console.log('Criando mensagem: ', data);
             });
 
         
@@ -218,7 +218,6 @@ export default function ChatPage() {
                                 onStickerClick={(sticker) => {
                                    handleNovaMensagem(':sticker:' + sticker);
                                 }}
-                                
                             />
                         </Box>
                     </Box>
@@ -304,7 +303,7 @@ function MessageList(props) {
                             </Text>
                         </Box>
 
-                        {mensagem.texto.startsWith(":sticker:") ? (
+                        {mensagem.texto.startsWith(':sticker:') ? (
                                 <Image src={mensagem.texto.replace(':sticker:', '')} 
                                 styleSheet={{
                                     maxWidth: '200px',
@@ -322,5 +321,5 @@ function MessageList(props) {
                 );
             })}
         </Box>
-    )
+    );
 }
